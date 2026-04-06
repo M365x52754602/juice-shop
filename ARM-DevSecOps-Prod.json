@@ -25,9 +25,30 @@
       "type": "string",
       "defaultValue": "[resourceGroup().location]"
     },
+    "appServicePlanSkuName": {
+      "type": "string",
+      "defaultValue": "P1v4",
+      "metadata": {
+        "description": "App Service Plan SKU name (e.g., P1v4)."
+      }
+    },
+    "appServicePlanSkuTier": {
+      "type": "string",
+      "defaultValue": "PremiumV4",
+      "metadata": {
+        "description": "App Service Plan SKU tier (e.g., PremiumV4)."
+      }
+    },
+    "appServicePlanSkuCapacity": {
+      "type": "int",
+      "defaultValue": 1,
+      "metadata": {
+        "description": "Instance count for the App Service Plan."
+      }
+    },
     "appServicePlanResourceGroupName": {
       "type": "string",
-      "defaultValue": "rg-juiceshop-dev-lod",
+      "defaultValue": "[resourceGroup().name]",
       "metadata": {
         "description": "The name of the resource group where the App Service Plan is located."
       }
@@ -38,6 +59,21 @@
     "DockerCompose": "[replace(variables('DockerComposeExpanded'),'___SQL_NAME___', format('sql-devsecops-{0}', resourcegroup().tags.LabInstance))]"
   },
   "resources": [
+    {
+      "type": "Microsoft.Web/serverfarms",
+      "apiVersion": "2025-03-01",
+      "name": "[parameters('appServicePlanName')]",
+      "location": "[parameters('location')]",
+      "kind": "linux",
+      "sku": {
+        "name": "[parameters('appServicePlanSkuName')]",
+        "tier": "[parameters('appServicePlanSkuTier')]",
+        "capacity": "[parameters('appServicePlanSkuCapacity')]"
+      },
+      "properties": {
+        "reserved": true
+      }
+    },
     {
       "type": "Microsoft.Web/sites",
       "apiVersion": "2021-03-01",
